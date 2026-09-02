@@ -85,7 +85,7 @@ def header_html():
 def home_hero_html():
     hero = asset_uri(BANNER["image"])
     floating = asset_uri("assets/floating/tools.png")
-    examples = "".join([f"<a class='ff-example' href='{qurl(q)}'>{html.escape(label)}</a>" for label,q in EXAMPLES])
+    examples = "".join([f"<span class='ff-example'>{html.escape(label)}</span>" for label,_q in EXAMPLES])
     quicks = []
     for label,q,img_path in QUICK:
         img = asset_uri(img_path)
@@ -106,14 +106,16 @@ def home_hero_html():
 
       <section class='ff-finder-side'>
         <div class='ff-finder-card'>
-          <h1 class='ff-finder-title'>오늘은 어떤 옷 찾으세요?</h1>
-          <form class='ff-search-form' method='get'>
-            <input type='hidden' name='page' value='search'>
-            <input class='ff-search-input' name='q' placeholder='원하는 옷을 편하게 말씀해주세요' autocomplete='off'>
-            <button class='ff-search-submit' type='submit'>찾기 →</button>
-          </form>
-          <div class='ff-helper'>이렇게 찾아보세요</div>
-          <div class='ff-examples'>{examples}</div>
+          <div class='ff-finder-top'>
+            <h1 class='ff-finder-title'>오늘은 어떤 옷 찾으세요?</h1>
+            <form class='ff-search-form' method='get'>
+              <input type='hidden' name='page' value='search'>
+              <input class='ff-search-input' name='q' placeholder='원하는 옷을 편하게 말씀해주세요' autocomplete='off'>
+              <button class='ff-search-submit' type='submit'>찾기 →</button>
+            </form>
+            <div class='ff-helper'>이렇게 찾아보세요</div>
+            <div class='ff-examples'>{examples}</div>
+          </div>
           <div class='ff-live'>
             <div class='ff-live-top'><span><span class='ff-live-dot'></span>FINDER LIVE</span><span class='ff-live-time'>{now}</span></div>
             <div class='ff-live-row'>

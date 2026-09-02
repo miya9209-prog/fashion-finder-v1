@@ -1,62 +1,35 @@
-# FASHION FINDER v1 — UI Update 01
+# FASHION FINDER v1 — Update 02
 
-**내옷 찾는 가장 쉬운 방법**
+사용자가 디자인한 **2안(왼쪽 Discovery / 오른쪽 Finder)**을 기준으로 정리한 전체 Streamlit 레포입니다.
 
-현재 배포된 Streamlit 시안 화면을 기준으로 첫 화면을 실제 쇼핑몰에 더 가깝게 다듬은 전체 교체용 레포입니다.
+## 이번 버전 방향
 
-## 이번 수정 내용
+### 그대로 살린 부분
+- 왼쪽 대형 착장/상품 Discovery
+- 오른쪽 `오늘은 어떤 옷 찾으세요?`
+- 자연어 질문 예시 2×2
+- FINDER LIVE 보드
+- 오른쪽 아래 `지금 많이 찾고 있어요` 원형 5개
+- 얇은 텍스트형 GNB
+- 우측 플로팅 메뉴
 
-1. **상단 GNB**
-   - 알약형 버튼 스타일 제거
-   - 일반 패션몰형 텍스트 메뉴로 변경
-   - `FASHION FINDER`는 워드마크처럼 강조
+### 보완한 부분
+- 브랜드는 서비스 중심이 아니라 GNB의 한 카테고리로 유지
+- LIVE 문구를 `현재 28,796개 / 당일발송 가능한 상품 대기중 / 271개 브랜드`로 정리
+- Streamlit Cloud 상단 기본 UI를 숨겨 실제 쇼핑몰 느낌 강화
+- 모바일에서는 Finder가 먼저 나오도록 순서 자동 변경
+- 이미지 파일만 넣으면 코드 변경 없이 바로 표시되도록 Asset 구조화
+- 상품 카드의 큰 `상품 보기` 버튼을 축소형 상세 링크로 유지
 
-2. **TALK FINDER**
-   - 슬로건 + 질문 + 검색창 + 예시 질문 + FINDER LIVE를 하나의 `Finder Console`로 묶음
-   - 기능들이 따로 떠 보이던 느낌을 줄임
+## 배포
 
-3. **FINDER LIVE**
-   - `현재 28,765개`를 더 크게 표시
-   - LIVE 상태 + 현재시간을 좌우로 정리
-   - 시그니처 보드로 존재감 강화
-
-4. **오른쪽 Discovery Banner**
-   - 이미지 / 카피 / CTA / 좌우 이동을 한 카드 안에 통합
-   - 실제 상품·착장 이미지는 다음 단계에서 적용
-
-5. **상품 랭킹**
-   - `실시간 FASHION RANK` 설명을 `지금 4050이 많이 보는 옷` 중심으로 변경
-   - 모든 카드 아래의 큰 `상품 보기` 버튼 제거
-   - 작은 `상세보기 →` 링크형 인터랙션으로 변경
-
-6. **브랜드**
-   - 브랜드는 여전히 하나의 카테고리/필터
-   - 자연어에 브랜드명이 있을 때만 검색 조건으로 작동
-
-## 배포 방법
-
-현재 GitHub 레포의 파일을 이 ZIP 내용으로 **전체 덮어쓰기**하면 됩니다.
-
-중요 파일:
-
-```text
-app.py
-components/data.py
-components/search.py
-components/ui.py
-data/products.csv
-data/brands.csv
-.streamlit/config.toml
-requirements.txt
-```
-
-GitHub에 push하면 Streamlit Community Cloud가 자동으로 재배포합니다.
+현재 GitHub 레포에 이 ZIP 내용을 **전체 덮어쓰기** 후 push 하세요.
+Streamlit Community Cloud가 자동으로 재배포합니다.
 
 ## 이미지
 
-아직 Placeholder입니다.
+자세한 파일명과 교체 방식은 `assets/README_IMAGES.md` 참고.
 
-- Hero/Discovery: `assets/hero/`
-- 상품: `assets/products/`
+## 디자인 레퍼런스
 
-다음 단계에서 실제 화면을 다시 확인한 뒤 이미지 비율, 파일명 규칙, CSV 연결 방법을 정합니다.
+사용자가 제공한 2안 이미지가 있다면 `assets/reference/FASHION-FINDER-MAIN-2.jpg`에 포함되어 있습니다.

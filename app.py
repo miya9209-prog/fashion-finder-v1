@@ -32,18 +32,25 @@ def run_search(query):
     st.session_state.query = query; st.session_state.page = 'search'; st.rerun()
 
 def nav_header():
-    cols = st.columns([2.3,.72,.72,.86,.72,.72,.9,.9,.72,1.04,.6,.6])
-    with cols[0]:
-        if st.button('FASHION FINDER', key='logo_btn', use_container_width=True): go('home')
-    navs=[('NEW','search','신상품'),('BEST','search','BEST'),('브랜드','brands',None),('상의','category','상의'),('하의','category','하의'),('원피스','category','원피스'),('아우터','category','아우터'),('세트','category','세트'),('체형커버','search','체형커버')]
-    for col,(label,page,val) in zip(cols[1:10],navs):
-        with col:
-            if st.button(label,key=f'nav_{label}',use_container_width=True):
-                if page=='category': go('category',selected_category=val,selected_middle='전체')
-                elif page=='search': run_search(val)
-                else: go(page)
-    with cols[10]: st.markdown("<div class='nav-icon'>♡</div>",unsafe_allow_html=True)
-    with cols[11]: st.markdown("<div class='nav-icon'>BAG</div>",unsafe_allow_html=True)
+    with st.container(key='topnav'):
+        cols = st.columns([2.3,.66,.66,.82,.66,.66,.84,.84,.66,.94,.44,.50], gap='small')
+        with cols[0]:
+            if st.button('FASHION FINDER', key='logo_btn', use_container_width=True):
+                go('home')
+        navs=[('NEW','search','신상품'),('BEST','search','BEST'),('브랜드','brands',None),('상의','category','상의'),('하의','category','하의'),('원피스','category','원피스'),('아우터','category','아우터'),('세트','category','세트'),('체형커버','search','체형커버')]
+        for col,(label,page,val) in zip(cols[1:10],navs):
+            with col:
+                if st.button(label,key=f'nav_{label}',use_container_width=True):
+                    if page=='category':
+                        go('category',selected_category=val,selected_middle='전체')
+                    elif page=='search':
+                        run_search(val)
+                    else:
+                        go(page)
+        with cols[10]:
+            st.markdown("<div class='nav-icon'>♡</div>",unsafe_allow_html=True)
+        with cols[11]:
+            st.markdown("<div class='nav-icon bag'>BAG</div>",unsafe_allow_html=True)
     st.markdown("<div class='nav-rule'></div>",unsafe_allow_html=True)
 
 def finder_input(prefix, default_query=''):
@@ -56,47 +63,67 @@ def finder_input(prefix, default_query=''):
 
 def render_live_card():
     now=datetime.now().strftime('%H:%M:%S')
-    st.markdown(f"""<div class='live-card'><div class='live-top'><span class='live-dot'></span> FINDER LIVE <span class='live-time'>{now}</span></div><div class='live-number'>{LIVE_PRODUCT_COUNT:,}</div><div class='live-label'>당일발송 상품 대기중</div></div>""",unsafe_allow_html=True)
+    st.markdown(
+        f"""<div class='live-card'>
+        <div class='live-top'><span><span class='live-dot'></span>FINDER LIVE</span><span class='live-time'>{now}</span></div>
+        <div class='live-main'><span class='live-prefix'>현재</span><span class='live-number'>{LIVE_PRODUCT_COUNT:,}</span><span class='live-unit'>개</span></div>
+        <div class='live-label'>당일발송 상품 대기중</div>
+        </div>""",
+        unsafe_allow_html=True
+    )
 
 def render_product_grid(df,prefix='grid',cols_count=4,limit=8):
     if df.empty:
-        st.markdown("<div class='empty-box'><div class='empty-title'>조건에 딱 맞는 상품을 찾는 중이에요.</div><div class='muted'>조건을 하나 줄이거나, 더 편한 표현으로 다시 물어보세요.</div></div>",unsafe_allow_html=True); return
-    view=df.head(limit); cols=st.columns(cols_count)
+        st.markdown("<div class='empty-box'><div class='empty-title'>조건에 딱 맞는 상품을 찾는 중이에요.</div><div class='muted'>조건을 하나 줄이거나, 더 편한 표현으로 다시 물어보세요.</div></div>",unsafe_allow_html=True)
+        return
+    view=df.head(limit)
+    cols=st.columns(cols_count,gap='medium')
     for idx,(_,row) in enumerate(view.iterrows()):
         with cols[idx%cols_count]:
-            st.markdown(product_card_html(row),unsafe_allow_html=True)
-            if st.button('상품 보기',key=f'{prefix}_{row["product_id"]}',use_container_width=True): go('product',selected_product_id=row['product_id'])
+            with st.container(key=f'product_{prefix}_{row["product_id"]}'):
+                st.markdown(product_card_html(row),unsafe_allow_html=True)
+                if st.button('상세보기 →',key=f'{prefix}_{row["product_id"]}',use_container_width=False):
+                    go('product',selected_product_id=row['product_id'])
 
 def home_page():
-    left,right=st.columns([1.32,1.0],gap='large')
+    left,right=st.columns([1.36,1.0],gap='large')
     with left:
-        st.markdown("<div class='eyebrow red'>내옷 찾는 가장 쉬운 방법</div>",unsafe_allow_html=True)
-        st.markdown("<h1 class='hero-title'>오늘은 어떤 옷을<br>찾으세요?</h1>",unsafe_allow_html=True)
-        finder_input('home')
-        st.markdown("<div class='helper-label'>이렇게 찾아보세요</div>",unsafe_allow_html=True)
-        excols=st.columns(4); examples=[('77까지 편한 출근팬츠','77까지 편한 출근팬츠'),('팔뚝 가려주는 블라우스','팔뚝커버 블라우스'),('뱃살 티 안 나는 니트','뱃살커버 니트'),('9월 여행 원피스','여행 원피스')]
-        for col,(label,q) in zip(excols,examples):
-            with col:
-                if st.button(label,key=f'ex_{label}',use_container_width=True): run_search(q)
-        render_live_card()
+        with st.container(key='finder_console'):
+            st.markdown("<div class='eyebrow red'>내옷 찾는 가장 쉬운 방법</div>",unsafe_allow_html=True)
+            st.markdown("<h1 class='hero-title'>오늘은 어떤 옷을<br>찾으세요?</h1>",unsafe_allow_html=True)
+            finder_input('home')
+            st.markdown("<div class='helper-label'>이렇게 찾아보세요</div>",unsafe_allow_html=True)
+            excols=st.columns(4,gap='small')
+            examples=[('77까지 출근팬츠','77까지 편한 출근팬츠'),('팔뚝커버 블라우스','팔뚝커버 블라우스'),('뱃살커버 니트','뱃살커버 니트'),('여행 원피스','여행 원피스')]
+            for col,(label,q) in zip(excols,examples):
+                with col:
+                    if st.button(label,key=f'ex_{label}',use_container_width=True):
+                        run_search(q)
+            render_live_card()
     with right:
         b=BANNERS[st.session_state.banner_index]
-        st.markdown(f"""<div class='discovery-banner'><div class='banner-image-placeholder'><div class='image-note'>DISCOVERY IMAGE</div></div><div class='banner-copy'><div class='eyebrow'>{b['eyebrow']}</div><div class='banner-title'>{b['title'].replace(chr(10),'<br>')}</div><div class='banner-sub'>{b['sub']}</div></div></div>""",unsafe_allow_html=True)
-        c1,c2,c3=st.columns([5,1,1])
-        with c1:
-            if st.button(b['cta'],key='banner_cta',use_container_width=True,type='primary'): run_search(b['query'])
-        with c2:
-            if st.button('‹',key='banner_prev',use_container_width=True): st.session_state.banner_index=(st.session_state.banner_index-1)%len(BANNERS); st.rerun()
-        with c3:
-            if st.button('›',key='banner_next',use_container_width=True): st.session_state.banner_index=(st.session_state.banner_index+1)%len(BANNERS); st.rerun()
+        with st.container(key='discovery_panel'):
+            st.markdown(f"""<div class='discovery-visual'><div class='image-note'>DISCOVERY IMAGE</div></div>
+            <div class='discovery-copy'><div class='eyebrow'>{b['eyebrow']}</div><div class='banner-title'>{b['title'].replace(chr(10),'<br>')}</div><div class='banner-sub'>{b['sub']}</div></div>""",unsafe_allow_html=True)
+            if st.button(b['cta']+' →',key='banner_cta',use_container_width=True,type='primary'):
+                run_search(b['query'])
+            ctrls=st.columns([8,1,1],gap='small')
+            with ctrls[1]:
+                if st.button('‹',key='banner_prev',use_container_width=True):
+                    st.session_state.banner_index=(st.session_state.banner_index-1)%len(BANNERS); st.rerun()
+            with ctrls[2]:
+                if st.button('›',key='banner_next',use_container_width=True):
+                    st.session_state.banner_index=(st.session_state.banner_index+1)%len(BANNERS); st.rerun()
     st.markdown("<div class='section-gap'></div>",unsafe_allow_html=True)
     section_title('지금 많이 찾고 있어요','말하지 않아도 바로 고를 수 있는 빠른 탐색')
-    qcols=st.columns(6); quicks=[('출근룩','출근룩'),('체형커버','체형커버'),('77+','77까지'),('간절기','간절기'),('오늘출발','오늘출발'),('브랜드','__brands__')]
+    qcols=st.columns(6,gap='small')
+    quicks=[('출근룩','출근룩'),('체형커버','체형커버'),('77+','77까지'),('간절기','간절기'),('오늘출발','오늘출발'),('브랜드','__brands__')]
     for col,(label,q) in zip(qcols,quicks):
         with col:
-            if st.button(label,key=f'quick_{label}',use_container_width=True): go('brands') if q=='__brands__' else run_search(q)
+            if st.button(label,key=f'quick_{label}',use_container_width=True):
+                go('brands') if q=='__brands__' else run_search(q)
     st.markdown("<div class='section-gap-sm'></div>",unsafe_allow_html=True)
-    section_title('실시간 FASHION RANK','4050 고객에게 반응이 좋은 상품을 먼저 보여줍니다')
+    section_title('지금 4050이 많이 보는 옷','실시간 FASHION RANK')
     render_product_grid(products.sort_values(['rank_score','same_day'],ascending=[False,False]),prefix='rank',cols_count=4,limit=8)
 
 def search_page():

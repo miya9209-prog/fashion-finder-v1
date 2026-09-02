@@ -2,7 +2,7 @@ from datetime import datetime
 import streamlit as st
 from components.data import load_products, load_brands, LIVE_PRODUCT_COUNT, LIVE_BRAND_COUNT
 from components.search import parse_query, filter_products, humanize_filters
-from components.ui import inject_css, product_card_html, brand_card_html, section_title, asset_image_html, circle_image_html
+from components.ui import inject_css, product_card_html, brand_card_html, section_title, asset_image_html, circle_image_html, image_tag_html
 
 st.set_page_config(page_title='FASHION FINDER | 내옷 찾는 가장 쉬운 방법', page_icon='🛍️', layout='wide', initial_sidebar_state='collapsed')
 inject_css()
@@ -30,10 +30,9 @@ def run_search(q):
 
 def nav_header():
     with st.container(key='topnav'):
-        left, nav, util = st.columns([2.35,7.6,1.25], gap='small')
+        left, nav, util = st.columns([2.45,7.35,1.20], gap='small')
         with left:
-            if st.button('FASHION FINDER',key='logo_btn',use_container_width=True): go('home')
-            st.markdown("<div class='brand-subtitle'>내 옷 찾는 쉬운 방법—패션파인더</div>",unsafe_allow_html=True)
+            st.markdown(image_tag_html('assets/brand/bi.png','brand-bi','FASHION FINDER'), unsafe_allow_html=True)
         with nav:
             cols=st.columns(9,gap='small')
             items=[('NEW','search','신상품'),('BEST','search','BEST'),('브랜드','brands',None),('상의','category','상의'),('하의','category','하의'),('원피스','category','원피스'),('아우터','category','아우터'),('세트','category','세트'),('체형커버','search','체형커버')]
@@ -74,34 +73,49 @@ def render_grid(df,prefix='grid',cols_count=4,limit=8):
 def home_page():
     with st.container(key='hero_row'):
         left,right=st.columns([0.92,1.25],gap='large')
+
+        # LEFT — user's Discovery block
         with left:
             b=BANNERS[st.session_state.banner_index]
             with st.container(key='discovery_panel'):
                 st.markdown(asset_image_html(b['image'],'DISCOVERY IMAGE','discovery-visual'),unsafe_allow_html=True)
                 st.markdown(f"<div class='discovery-copy'><div class='eyebrow'>{b['eyebrow']}</div><div class='banner-title'>{b['title'].replace(chr(10),'<br>')}</div><div class='banner-sub'>{b['sub']}</div></div>",unsafe_allow_html=True)
-                if st.button(b['cta'],key='banner_cta',use_container_width=True,type='primary'): run_search(b['query'])
+                # visual CTA styled like the user's black/yellow bar
+                count = b['cta'].split(' ')[1] if len(b['cta'].split(' ')) > 1 else ''
+                prefix = b['cta'].split(' ')[0]
+                st.markdown(f"<div class='discovery-cta'>{prefix} <span>{count}</span> 보러가기</div>", unsafe_allow_html=True)
+                if st.button('배너 상품 보기', key='banner_cta_hit', use_container_width=True): run_search(b['query'])
                 ctr=st.columns([8,1,1],gap='small')
                 with ctr[1]:
                     if st.button('‹',key='banner_prev',use_container_width=True): st.session_state.banner_index=(st.session_state.banner_index-1)%len(BANNERS); st.rerun()
                 with ctr[2]:
                     if st.button('›',key='banner_next',use_container_width=True): st.session_state.banner_index=(st.session_state.banner_index+1)%len(BANNERS); st.rerun()
+
+        # RIGHT — user's Finder block
         with right:
             with st.container(key='finder_console'):
                 st.markdown("<h1 class='hero-title'>오늘은 어떤 옷 찾으세요?</h1>",unsafe_allow_html=True)
                 finder_input('home')
                 st.markdown("<div class='helper-label'>이렇게 찾아보세요</div>",unsafe_allow_html=True)
                 excols=st.columns(2,gap='small')
-                examples=[('“배 좀 가려지고 77도 입는 출근용 니트 찾아줘”','77까지 뱃살커버 출근 니트'),('“내가 힙이 좀 있는 편인데 편한 청바지 추천해줘”','힙커버 편한 데님'),('“내일 시댁가는데 얌전하면서 편한 원피스 필요해”','단정한 편한 원피스'),('“어려보이면서도 너무 튀지 않는 셔츠 있어?”','부드러운 인상 셔츠')]
+                examples=[
+                    ('“배 좀 가려지고 77도 입는 출근용 니트 찾아줘”','77까지 뱃살커버 출근 니트'),
+                    ('“내가 힙이 좀 있는 편인데 편한 청바지 추천해줘”','힙커버 편한 데님'),
+                    ('“내일 시댁가는데 얌전하면서 편한 원피스 필요해”','단정한 편한 원피스'),
+                    ('“어려보이면서도 너무 튀지 않는 셔츠 있어?”','부드러운 인상 셔츠')]
                 for i,(label,q) in enumerate(examples):
                     with excols[i%2]:
                         if st.button(label,key=f'example_{i}',use_container_width=True): run_search(q)
                 live_board()
+
             st.markdown("<div class='quick-title'>지금 많이 찾고 있어요</div>",unsafe_allow_html=True)
             qcols=st.columns(5,gap='small')
             for i,(label,q,img) in enumerate(QUICK):
                 with qcols[i]:
-                    st.markdown(circle_image_html(img,label),unsafe_allow_html=True)
-                    if st.button(label,key=f'quick_circle_{i}',use_container_width=True): run_search(q)
+                    with st.container(key=f'quick_item_{i}'):
+                        st.markdown(circle_image_html(img,label),unsafe_allow_html=True)
+                        if st.button(label,key=f'quick_circle_{i}',use_container_width=True): run_search(q)
+
     st.markdown("<div class='section-gap'></div>",unsafe_allow_html=True)
     section_title('지금 4050이 많이 보는 옷','실시간 FASHION RANK')
     render_grid(products.sort_values(['rank_score','same_day'],ascending=[False,False]),'rank',4,8)
@@ -176,7 +190,7 @@ def product_page():
         st.selectbox('색상',row.color.split('|')); st.selectbox('사이즈',row.sizes.split('|')); st.button('구매하기 (시안)',use_container_width=True,type='primary')
 
 def floating_tools():
-    st.markdown("<div class='floating-tools'><div class='floating-badge'>24시간<br>상품상담</div><div class='floating-icon'>◎</div><div class='floating-icon kakao'>TALK</div><div class='floating-icon'>◷</div><div class='floating-icon'>⌃</div><div class='floating-icon'>⌄</div></div>",unsafe_allow_html=True)
+    st.markdown(image_tag_html('assets/floating/tools.png','floating-tools-image','빠른 메뉴'), unsafe_allow_html=True)
 
 nav_header(); floating_tools()
 page=st.session_state.page

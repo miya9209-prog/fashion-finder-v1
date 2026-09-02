@@ -1,35 +1,24 @@
-# FASHION FINDER v1 — Update 02
+# FASHION FINDER v1 — Update 03
 
-사용자가 디자인한 **2안(왼쪽 Discovery / 오른쪽 Finder)**을 기준으로 정리한 전체 Streamlit 레포입니다.
+이번 버전은 사용자가 직접 만든 **FASHION-FINDER-MAIN-2.jpg를 기준으로 1:1에 가깝게 재구성**한 Streamlit 레포입니다.
 
-## 이번 버전 방향
+## 이번 수정에서 달라진 점
+- 좌측 상단 BI를 텍스트로 재현하지 않고 사용자가 만든 디자인에서 **정확히 추출한 BI 이미지** 사용
+- 메인 왼쪽 착장 이미지를 사용자 디자인 이미지로 실제 적용
+- `지금 많이 찾고 있어요` 5개 원형 이미지도 사용자 디자인에서 실제 적용
+- 우측 플로팅 메뉴도 사용자 디자인 그대로 이미지화
+- PC 레이아웃 폭/좌우 비율/간격을 TARGET_MAIN_2 기준으로 조정
+- Discovery CTA는 검정 바 + 노란 상품 수 디자인으로 재현
+- Quick Discovery는 알약 버튼이 아니라 원형 이미지 아래 텍스트 형태로 변경
+- Finder LIVE는 디자인은 유지하되 문구만 `현재 28,796개 / 당일발송 가능한 상품 대기중 / 271개 브랜드`로 정리
 
-### 그대로 살린 부분
-- 왼쪽 대형 착장/상품 Discovery
-- 오른쪽 `오늘은 어떤 옷 찾으세요?`
-- 자연어 질문 예시 2×2
-- FINDER LIVE 보드
-- 오른쪽 아래 `지금 많이 찾고 있어요` 원형 5개
-- 얇은 텍스트형 GNB
-- 우측 플로팅 메뉴
+## 디자인 기준 이미지
+`assets/reference/TARGET_MAIN_2.jpg`
 
-### 보완한 부분
-- 브랜드는 서비스 중심이 아니라 GNB의 한 카테고리로 유지
-- LIVE 문구를 `현재 28,796개 / 당일발송 가능한 상품 대기중 / 271개 브랜드`로 정리
-- Streamlit Cloud 상단 기본 UI를 숨겨 실제 쇼핑몰 느낌 강화
-- 모바일에서는 Finder가 먼저 나오도록 순서 자동 변경
-- 이미지 파일만 넣으면 코드 변경 없이 바로 표시되도록 Asset 구조화
-- 상품 카드의 큰 `상품 보기` 버튼을 축소형 상세 링크로 유지
+## 주요 실제 이미지
+- `assets/brand/bi.png`
+- `assets/hero/main_01.jpg`
+- `assets/quick/q01.jpg` ~ `q05.jpg`
+- `assets/floating/tools.png`
 
-## 배포
-
-현재 GitHub 레포에 이 ZIP 내용을 **전체 덮어쓰기** 후 push 하세요.
-Streamlit Community Cloud가 자동으로 재배포합니다.
-
-## 이미지
-
-자세한 파일명과 교체 방식은 `assets/README_IMAGES.md` 참고.
-
-## 디자인 레퍼런스
-
-사용자가 제공한 2안 이미지가 있다면 `assets/reference/FASHION-FINDER-MAIN-2.jpg`에 포함되어 있습니다.
+기존 GitHub 레포에 전체 덮어쓰기 후 push하면 됩니다.
